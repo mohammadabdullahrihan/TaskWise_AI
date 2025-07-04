@@ -136,7 +136,6 @@ export default function Home() {
                 <div className="text-center py-20 bg-card rounded-lg border border-dashed">
                     <h2 className="text-2xl font-semibold mb-2">No tasks yet!</h2>
                     <p className="text-muted-foreground mb-4">Click "Add New Task" to get started.</p>
-                    <img src="https://placehold.co/400x300.png" data-ai-hint="illustration tasks" alt="An empty state illustration showing a person looking at an empty board." className="mx-auto rounded-md mt-4" />
                 </div>
             )}
           </main>
