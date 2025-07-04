@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { TaskCard } from '@/components/task-card';
 import { TaskForm } from '@/components/task-form';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, LayoutGrid, List } from 'lucide-react';
 import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -16,6 +16,13 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const sampleTasks: Task[] = [
   {
@@ -55,6 +62,7 @@ export default function Home() {
   const [tasks, setTasks] = useState<Task[]>(sampleTasks);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const { toast } = useToast();
 
   const handleOpenDialog = (task?: Task) => {
@@ -105,39 +113,69 @@ export default function Home() {
 
   return (
     <>
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen text-foreground">
         <div className="container mx-auto p-4 sm:p-6 lg:p-8">
           <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
             <div className="mb-4 sm:mb-0">
-                <h1 className="text-4xl font-bold text-primary-foreground font-headline">TaskWise AI</h1>
+                <h1 className="text-4xl font-bold text-primary">TaskWise AI</h1>
                 <p className="text-muted-foreground">Your smart task management assistant</p>
             </div>
-            <Button onClick={() => handleOpenDialog()} size="lg">
-              <PlusCircle className="mr-2" />
-              <span>Add New Task</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    {layout === 'grid' ? <LayoutGrid className="mr-2 h-4 w-4" /> : <List className="mr-2 h-4 w-4" />}
+                    View
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => setLayout('grid')}>
+                    <LayoutGrid className="mr-2 h-4 w-4" />
+                    Grid
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setLayout('list')}>
+                    <List className="mr-2 h-4 w-4" />
+                    List
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button onClick={() => handleOpenDialog()} size="lg">
+                <PlusCircle className="mr-2" />
+                <span>Add New Task</span>
+              </Button>
+            </div>
           </header>
 
           <main>
-            {sortedTasks.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {sortedTasks.map(task => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onEdit={() => handleOpenDialog(task)}
-                    onDelete={handleDeleteTask}
-                    onStatusChange={handleStatusChange}
-                    onSetSubtasks={handleSetSubtasks}
-                  />
-                ))}
-              </div>
-            ) : (
+            <AnimatePresence>
+              {sortedTasks.length > 0 ? (
+                <motion.div
+                  key={layout}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className={layout === 'grid' ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" : "space-y-4"}
+                >
+                  {sortedTasks.map(task => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      layout={layout}
+                      onEdit={() => handleOpenDialog(task)}
+                      onDelete={handleDeleteTask}
+                      onStatusChange={handleStatusChange}
+                      onSetSubtasks={handleSetSubtasks}
+                    />
+                  ))}
+                </motion.div>
+              ) : (
                 <div className="text-center py-20 bg-card rounded-lg border border-dashed">
                     <h2 className="text-2xl font-semibold mb-2">No tasks yet!</h2>
                     <p className="text-muted-foreground mb-4">Click "Add New Task" to get started.</p>
                 </div>
-            )}
+              )}
+            </AnimatePresence>
           </main>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Send } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -57,7 +57,7 @@ export function TaskForm({ task, onSave, onCancel }: TaskFormProps) {
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Plan birthday party" {...field} />
+                <Input placeholder="e.g., Plan birthday party" {...field} className="text-base"/>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,11 +111,14 @@ export function TaskForm({ task, onSave, onCancel }: TaskFormProps) {
             </FormItem>
           )}
         />
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="ghost" onClick={onCancel}>
                 Cancel
             </Button>
-            <Button type="submit">Save Task</Button>
+            <Button type="submit">
+                <Send className="mr-2 h-4 w-4" />
+                {task ? 'Save Changes' : 'Create Task'}
+            </Button>
         </div>
       </form>
     </Form>
